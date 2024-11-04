@@ -1,30 +1,38 @@
-#!/usr/bin/python3
-""" 4-main """
-MRUCache = __import__('4-mru_cache').MRUCache
+#!/usr/bin/env python3
+"""Task 4: MRU Caching.
+"""
+from collections import OrderedDict
 
-my_cache = MRUCache()
-my_cache.put("A", "Hello")
-my_cache.put("B", "World")
-my_cache.put("C", "Holberton")
-my_cache.put("D", "School")
-my_cache.print_cache()
-print(my_cache.get("B"))
-my_cache.put("E", "Battery")
-my_cache.print_cache()
-my_cache.put("C", "Street")
-my_cache.print_cache()
-print(my_cache.get("A"))
-print(my_cache.get("B"))
-print(my_cache.get("C"))
-my_cache.put("F", "Mission")
-my_cache.print_cache()
-my_cache.put("G", "San Francisco")
-my_cache.print_cache()
-my_cache.put("H", "H")
-my_cache.print_cache()
-my_cache.put("I", "I")
-my_cache.print_cache()
-my_cache.put("J", "J")
-my_cache.print_cache()
-my_cache.put("K", "K")
-my_cache.print_cache()
+from base_caching import BaseCaching
+
+
+class MRUCache(BaseCaching):
+    """A class `MRUCache` that inherits
+       from `BaseCaching` and is a caching system
+    """
+    def __init__(self):
+        """Initializes the cache.
+        """
+        super().__init__()
+        self.cache_data = OrderedDict()
+
+    def put(self, key, item):
+        """Adds an item in the cache.
+        """
+        if key is None or item is None:
+            return
+        if key not in self.cache_data:
+            if len(self.cache_data) + 1 > BaseCaching.MAX_ITEMS:
+                mru_key, _ = self.cache_data.popitem(False)
+                print("DISCARD:", mru_key)
+            self.cache_data[key] = item
+            self.cache_data.move_to_end(key, last=False)
+        else:
+            self.cache_data[key] = item
+
+    def get(self, key):
+        """Retrieves an item by key.
+        """
+        if key is not None and key in self.cache_data:
+            self.cache_data.move_to_end(key, last=False)
+        return self.cache_data.get(key, None)                   
